@@ -40,7 +40,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         jdbcTemplate.update(UPDATE_SQL, customer.getFirstName(), customer.getLastName(), customer.getId());
     }
 
-    private final String DELETE_SQL = "DELETE FROM person WHERE id=?";
+    private final String DELETE_SQL = "DELETE FROM customer WHERE id=?";
     @Override
     public void delete(int id) {
         jdbcTemplate.update(DELETE_SQL, id);

@@ -1,5 +1,11 @@
 package com.example.customer.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="address")
 public class Address {
     private int id;
     private String street;
@@ -12,18 +18,19 @@ public class Address {
 
     public void setId(int id) { this.id = id; }
 
+    @Column(name="street")
     public String getStreet() { return street; }
 
     public void setStreet(String street) { this.street = street; }
-
+    @Column(name="city")
     public String getCity() { return city; }
 
     public void setCity(String city) { this.city = city; }
-
+    @Column(name="zip")
     public String getZip() { return zip; }
 
     public void setZip(String zip) { this.zip = zip; }
-
+    @Column(name="state")
     public String getState() { return state; }
 
     public void setState(String state) { this.state = state; }

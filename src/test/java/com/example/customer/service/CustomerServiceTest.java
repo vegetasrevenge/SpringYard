@@ -1,6 +1,8 @@
 package com.example.customer.service;
 
+import com.example.customer.model.Address;
 import com.example.customer.model.Customer;
+import com.example.customer.model.Email;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -17,6 +20,10 @@ public class CustomerServiceTest {
 
 	@Autowired
 	CustomerService customerService;
+
+	//need to refactor tests to test transactions and everything else OR
+	//simply add address and email testing to all tests
+
 
 	@Test
 	public void testAddGet() {
@@ -101,6 +108,24 @@ public class CustomerServiceTest {
 		customer.setFirstName(firstName);
 		customer.setLastName(lastName);
 		return customer;
+	}
+
+	//random number generator
+	private static Random random = new Random();
+
+	public static Address createRandomAddress() {
+		Address address = new Address();
+		address.setStreet(Integer.toString(random.nextInt()));
+		address.setCity(Integer.toString(random.nextInt()));
+		address.setState("TX");
+		address.setZip("12345");
+		return address;
+	}
+
+	public static Email createRandomEmail() {
+		Email email = new Email();
+		email.setEmail(Integer.toString(random.nextInt()));
+		return email;
 	}
 
 	private Customer findInList(List<Customer> customers, String first, String last) {

@@ -30,13 +30,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional
     @Override
-    public void add(Customer customer) { customerRepository.add(customer);}
+    public Customer add(Customer customer) { return customerRepository.save(customer);}
 
     @Transactional
     @Override
     public void add(List<Customer> customers) {
         for (Customer customer : customers) {
-            customerRepository.add(customer);
+            customerRepository.save(customer);
         }
     }
 
@@ -46,58 +46,70 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> get() {
-        return customerRepository.get();
-    }
+    public List<Customer> get() { return customerRepository.findAll(); }
 
     @Transactional
     @Override
     public void update(Customer customer) {
-        customerRepository.update(customer);
+        customerRepository.save(customer);
     }
 
     @Transactional
     @Override
     public void delete(int id) {
+        Customer customer = this.getCustomer(id);
+        emailRepository.delete(customer.getEmails());
+        if (customer.getAddress() != null) {
+            addressRepository.delete(customer.getAddress());
+        }
         customerRepository.delete(id);
     }
-
+    @Transactional
     @Override
     public Customer addAddress(Address address) {
-        addressRepository.add(address);
-        return getCustomer(address.getCustomerId());
+        address = addressRepository.save(address);
+        Customer customer = customerRepository.findOne(address.getCustomer().getId());
+        customer.setAddress(address);
+        customerRepository.save(customer);
+        return getCustomer(address.getCustomer().getId());
     }
-
+    @Transactional
     @Override
     public Customer updateAddress(Address address) {
-        addressRepository.update(address);
-        return getCustomer(address.getCustomerId());
+        addressRepository.save(address);
+        return getCustomer(address.getCustomer().getId());
     }
-
+    @Transactional
     @Override
     public Customer deleteAddress(int customerId, int addressId) {
         addressRepository.delete(addressId);
+        Customer customer = customerRepository.findOne(customerId);
+        customer.setAddress(null);
+        customerRepository.save(customer);
         return getCustomer(customerId);
     }
-
+    @Transactional
     @Override
     public Customer addEmail(Email email) {
-        emailRepository.add(email);
-        return getCustomer(email.getCustomerId());
+        emailRepository.save(email);
+        Customer customer = customerRepository.findOne(email.getCustomer().getId());
+        customer.getEmails().add(email);
+        customerRepository.save(customer);
+        return getCustomer(email.getCustomer().getId());
     }
-
+    @Transactional
     @Override
     public Customer deleteEmail(int customerId, int emailId) {
+        Email email = emailRepository.findOne(emailId);
         emailRepository.delete(emailId);
+        Customer customer = customerRepository.findOne(email.getCustomer().getId());
+        customerRepository.save(customer);
         return getCustomer(customerId);
     }
 
     private Customer getCustomer(int id) {
-        Customer customer = customerRepository.getById(id);
-        customer.setAddress(addressRepository.findByCustomerId(customer.getId()));
-        customer.getEmails().clear();
-        customer.getEmails().addAll(emailRepository.findByCustomerId(id));
-        System.out.println("\n\n getCustomer " + customer);
+        Customer customer = customerRepository.findOne(id);
+        customer.getEmails().size();
         return customer;
     }
 }

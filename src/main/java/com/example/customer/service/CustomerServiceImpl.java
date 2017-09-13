@@ -1,7 +1,11 @@
 package com.example.customer.service;
 
+import com.example.customer.model.Address;
+import com.example.customer.model.Email;
+import com.example.customer.repository.AddressRepository;
 import com.example.customer.repository.CustomerRepository;
 import com.example.customer.model.Customer;
+import com.example.customer.repository.EmailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,50 +20,96 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    CustomerRepository customerRepository;
 
-    private final String INSERT_SQL = "INSERT INTO customer (firstName, lastName) VALUES (?,?)";
+    @Autowired
+    AddressRepository addressRepository;
+
+    @Autowired
+    EmailRepository emailRepository;
+
     @Transactional
     @Override
-    public void add(Customer customer) {
-        jdbcTemplate.update(INSERT_SQL, customer.getFirstName(), customer.getLastName());
+    public Customer add(Customer customer) { return customerRepository.save(customer);}
+
+    @Transactional
+    @Override
+    public void add(List<Customer> customers) {
+        for (Customer customer : customers) {
+            customerRepository.save(customer);
+        }
     }
 
-    private final String SELECT_BY_ID_SQL = "SELECT * FROM customer WHERE id = ?";
     @Override
     public Customer getById(int id) {
-        return jdbcTemplate.queryForObject(SELECT_BY_ID_SQL, new CustomerServiceImpl.CustomerMapper(), id);
+        return getCustomer(id);
     }
 
-    private final String SELECT_SQL = "SELECT * FROM customer";
     @Override
-    public List<Customer> get() {
-        return jdbcTemplate.query(SELECT_SQL, new CustomerServiceImpl.CustomerMapper());
-    }
+    public List<Customer> get() { return customerRepository.findAll(); }
 
-    private final String UPDATE_SQL = "UPDATE customer SET firstName=?, lastName=? where id=?";
     @Transactional
     @Override
     public void update(Customer customer) {
-        jdbcTemplate.update(UPDATE_SQL, customer.getFirstName(), customer.getLastName(), customer.getId());
+        customerRepository.save(customer);
     }
 
-    private final String DELETE_SQL = "delete from customer where id=?";
     @Transactional
     @Override
     public void delete(int id) {
-        jdbcTemplate.update(DELETE_SQL, id);
+        Customer customer = this.getCustomer(id);
+        emailRepository.delete(customer.getEmails());
+        if (customer.getAddress() != null) {
+            addressRepository.delete(customer.getAddress());
+        }
+        customerRepository.delete(id);
+    }
+    @Transactional
+    @Override
+    public Customer addAddress(Address address) {
+        address = addressRepository.save(address);
+        Customer customer = customerRepository.findOne(address.getCustomer().getId());
+        customer.setAddress(address);
+        customerRepository.save(customer);
+        return getCustomer(address.getCustomer().getId());
+    }
+    @Transactional
+    @Override
+    public Customer updateAddress(Address address) {
+        addressRepository.save(address);
+        return getCustomer(address.getCustomer().getId());
+    }
+    @Transactional
+    @Override
+    public Customer deleteAddress(int customerId, int addressId) {
+        addressRepository.delete(addressId);
+        Customer customer = customerRepository.findOne(customerId);
+        customer.setAddress(null);
+        customerRepository.save(customer);
+        return getCustomer(customerId);
+    }
+    @Transactional
+    @Override
+    public Customer addEmail(Email email) {
+        emailRepository.save(email);
+        Customer customer = customerRepository.findOne(email.getCustomer().getId());
+        customer.getEmails().add(email);
+        customerRepository.save(customer);
+        return getCustomer(email.getCustomer().getId());
+    }
+    @Transactional
+    @Override
+    public Customer deleteEmail(int customerId, int emailId) {
+        Email email = emailRepository.findOne(emailId);
+        emailRepository.delete(emailId);
+        Customer customer = customerRepository.findOne(email.getCustomer().getId());
+        customerRepository.save(customer);
+        return getCustomer(customerId);
     }
 
-
-    private static class CustomerMapper implements RowMapper<Customer> {
-        @Override
-        public Customer mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Customer customer = new Customer();
-            customer.setId(rs.getInt("id"));
-            customer.setFirstName(rs.getString("firstName"));
-            customer.setLastName(rs.getString("lastName"));
-            return customer;
-        }
+    private Customer getCustomer(int id) {
+        Customer customer = customerRepository.findOne(id);
+        customer.getEmails().size();
+        return customer;
     }
 }

@@ -50,13 +50,14 @@ public class CustomerController {
     public String addAddress(@PathVariable("id") Integer id,
                              @RequestBody String json) throws IOException {
         Address address = objectMapper.readValue(json, Address.class);
-        address.setCustomerId(id);
+        Customer customer = customerService.getById(id);
+        address.setCustomer(customer);
         customerService.addAddress(address);
         return "ok";
 
     }
 
-    @DeleteMapping("/api/person/{id}/address/{addressId}")
+    @DeleteMapping("/api/customer/{id}/address/{addressId}")
     public String deleteAddress(@PathVariable("id") Integer id,
                                 @PathVariable("addressId") Integer addressId) {
         customerService.deleteAddress(id, addressId);
@@ -67,7 +68,8 @@ public class CustomerController {
     public String addEmail(@PathVariable("id") Integer id,
                            @RequestBody String json) throws IOException {
         Email email = objectMapper.readValue(json, Email.class);
-        email.setCustomerId(id);
+        Customer customer = customerService.getById(id);
+        email.setCustomer(customer);
         customerService.addEmail(email);
         return "ok";
     }

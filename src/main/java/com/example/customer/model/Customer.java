@@ -23,7 +23,8 @@ public class Customer {
 
     public Customer() {
     }
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -55,6 +56,11 @@ public class Customer {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    //@JsonIgnore
+    public void setEmails(List<Email> emails) {
+        this.emails = emails;
     }
 
     @OneToMany(mappedBy="customer", fetch=FetchType.LAZY)

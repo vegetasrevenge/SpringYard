@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
+@Entity
+@Table(name="email")
 public class Email {
 
     private int id;
@@ -22,6 +24,7 @@ public class Email {
     public void setCustomer(Customer customer) { this.customer = customer; }
 
     public String getEmail() { return email; }
+
     public void setEmail(String email) { this.email = email; }
 
     @Override

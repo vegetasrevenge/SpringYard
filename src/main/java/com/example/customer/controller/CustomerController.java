@@ -25,7 +25,6 @@ public class CustomerController {
     public String addCustomer(@RequestBody String json) throws IOException {
         Customer customer = objectMapper.readValue(json, Customer.class);
         customerService.add(customer);
-
         return "ok";
     }
 

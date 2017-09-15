@@ -2,6 +2,8 @@ package com.example.customer.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ public class Customer {
         this.phone = phone;
     }
 
-    //@JsonIgnore
+
     public void setEmails(List<Email> emails) {
         this.emails = emails;
     }

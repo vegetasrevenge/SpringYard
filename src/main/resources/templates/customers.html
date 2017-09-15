@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Customers</title>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Customers</title>
+    </head>
+    <body>
+        <h1>Customers</h1>
 
-    <div class="container">
-        <div class="content" th:each="customer : ${customers}">
-            <span></span>
+        <div class="container">
+            <div class="content" th:each="customer : ${customers}">
+                <span th:text="${customer.firstName}"></span>
+                <span th:text="${customer.lastName}"></span>
+                <span th:text="${customer.phone}"></span>
+                <span th:each="email : ${customer.emails}">
+                    <span th:text="${email}"></span>
+                </span>
+            </div>
         </div>
-    </div>
 
-</body>
+    </body>
 </html>

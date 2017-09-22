@@ -23,6 +23,7 @@ public class Email {
     public Customer getCustomer() { return customer; }
     public void setCustomer(Customer customer) { this.customer = customer; }
 
+    @Column(name="email")
     public String getEmail() { return email; }
 
     public void setEmail(String email) { this.email = email; }

@@ -7,8 +7,13 @@
     <body>
         <h1>Customers</h1>
 
+        <h2 th:text="${message}"></h2>
+
+        <a href="add_customer.html"><h2>Add a customer</h2></a>
+
         <div class="container">
             <div class="content" th:each="customer : ${customers}">
+                <a th:href="${'customer_detail/' + customer.id}"><span th:text="${customer.id}"></span></a>
                 <span th:text="${customer.firstName}"></span>
                 <span th:text="${customer.lastName}"></span>
                 <span th:text="${customer.phone}"></span>
